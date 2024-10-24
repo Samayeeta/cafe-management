@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet">
+    <title>Cafe Management</title>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #d9c7b7;
+            color: #333;
+            padding: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cafe Menu</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p class="{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <form method="POST" action="/add">
+        <input type="text" name="name" placeholder="Item Name" required>
+        <input type="number" name="price" placeholder="Item Price" step="0.01" required>
+        <button type="submit">Add Item</button>
+    </form>
+    <h2>Menu Items</h2>
+    <ul>
+        {% for item in items %}
+            <li>{{ item.name }} - ${{ item.price }} <a href="/delete/{{ item.id }}">Delete</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
