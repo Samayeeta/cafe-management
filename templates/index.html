@@ -21,6 +21,9 @@
         .success {
             color: green;
         }
+        .unavailable {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -32,16 +35,31 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+    
     <form method="POST" action="/add">
         <input type="text" name="name" placeholder="Item Name" required>
         <input type="number" name="price" placeholder="Item Price" step="0.01" required>
-        <input type="text" name="category" placeholder="Item Category" required> 
+        <input type="text" name="category" placeholder="Item Category" required>
+        <label for="available">Available: </label>
+        <input type="checkbox" name="available" checked>
         <button type="submit">Add Item</button>
     </form>
+
     <h2>Menu Items</h2>
     <ul>
         {% for item in items %}
-            <li>{{ item.name }} - ${{ item.price }} ({{ item.category }}) <a href="/delete/{{ item.id }}">Delete</a></li>  
+            <li>
+                {{ item.name }} - ${{ item.price }} ({{ item.category }}) 
+                {% if item.available %}
+                    <strong>(Available)</strong>
+                {% else %}
+                    <strong class="unavailable">(Unavailable)</strong>
+                {% endif %}
+                <a href="/delete/{{ item.id }}">Delete</a>
+                <a href="/toggle_availability/{{ item.id }}">
+                    {% if item.available %} Mark Unavailable {% else %} Mark Available {% endif %}
+                </a>
+            </li>
         {% endfor %}
     </ul>
 </body>
