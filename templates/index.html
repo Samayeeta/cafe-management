@@ -24,6 +24,20 @@
         .unavailable {
             color: red;
         }
+        img {
+            width: 100px;
+            height: auto;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .menu-item button {
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -35,21 +49,23 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-    
-    <form method="POST" action="/add">
+
+    <form method="POST" action="/add" enctype="multipart/form-data">
         <input type="text" name="name" placeholder="Item Name" required>
         <input type="number" name="price" placeholder="Item Price" step="0.01" required>
         <input type="text" name="category" placeholder="Item Category" required>
         <label for="available">Available: </label>
         <input type="checkbox" name="available" checked>
+        <input type="file" name="image_file" accept="image/*" required> <!-- Input for image upload -->
         <button type="submit">Add Item</button>
     </form>
 
     <h2>Menu Items</h2>
     <ul>
         {% for item in items %}
-            <li>
-                {{ item.name }} - ${{ item.price }} ({{ item.category }}) 
+            <li class="menu-item">
+                <img src="{{ url_for('static', filename='uploads/' ~ item.image_path) }}" alt="{{ item.name }}">
+                {{ item.name }} - ${{ item.price }} ({{ item.category }})
                 {% if item.available %}
                     <strong>(Available)</strong>
                 {% else %}
