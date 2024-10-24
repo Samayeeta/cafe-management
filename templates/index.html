@@ -35,12 +35,13 @@
     <form method="POST" action="/add">
         <input type="text" name="name" placeholder="Item Name" required>
         <input type="number" name="price" placeholder="Item Price" step="0.01" required>
+        <input type="text" name="category" placeholder="Item Category" required> 
         <button type="submit">Add Item</button>
     </form>
     <h2>Menu Items</h2>
     <ul>
         {% for item in items %}
-            <li>{{ item.name }} - ${{ item.price }} <a href="/delete/{{ item.id }}">Delete</a></li>
+            <li>{{ item.name }} - ${{ item.price }} ({{ item.category }}) <a href="/delete/{{ item.id }}">Delete</a></li>  
         {% endfor %}
     </ul>
 </body>
