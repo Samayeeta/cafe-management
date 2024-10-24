@@ -14,6 +14,15 @@
         }
         form {
             margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         .error {
             color: red;
@@ -34,9 +43,37 @@
             display: flex;
             align-items: center;
             margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f1e9;
+            justify-content: space-between; 
         }
         .menu-item button {
             margin-left: 10px;
+            flex-shrink: 0; 
+        }
+        .item-details {
+            display: flex;
+            align-items: center;
+            flex-grow: 1; 
+        }
+        .availability {
+            margin-left: auto; 
+        }
+        .orders {
+            margin-top: 20px;
+        }
+        .order-item {
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            margin: 10px 0; 
         }
     </style>
 </head>
@@ -54,9 +91,12 @@
         <input type="text" name="name" placeholder="Item Name" required>
         <input type="number" name="price" placeholder="Item Price" step="0.01" required>
         <input type="text" name="category" placeholder="Item Category" required>
-        <label for="available">Available: </label>
-        <input type="checkbox" name="available" checked>
-        <input type="file" name="image_file" accept="image/*" required> <!-- Input for image upload -->
+        <input type="number" name="stock" placeholder="Stock Quantity" required>
+        <div class="checkbox-label">
+            <label for="available">Available:</label>
+            <input type="checkbox" name="available" checked>
+        </div>
+        <input type="file" name="image_file" accept="image/*" required>
         <button type="submit">Add Item</button>
     </form>
 
@@ -64,19 +104,42 @@
     <ul>
         {% for item in items %}
             <li class="menu-item">
-                <img src="{{ url_for('static', filename='uploads/' ~ item.image_path) }}" alt="{{ item.name }}">
-                {{ item.name }} - ${{ item.price }} ({{ item.category }})
-                {% if item.available %}
-                    <strong>(Available)</strong>
-                {% else %}
-                    <strong class="unavailable">(Unavailable)</strong>
-                {% endif %}
-                <a href="/delete/{{ item.id }}">Delete</a>
-                <a href="/toggle_availability/{{ item.id }}">
-                    {% if item.available %} Mark Unavailable {% else %} Mark Available {% endif %}
-                </a>
+                <div class="item-details">
+                    <img src="{{ url_for('static', filename='uploads/' ~ item.image_path) }}" alt="{{ item.name }}">
+                    <span>{{ item.name }} - ${{ item.price }} ({{ item.category }}) - Stock: {{ item.stock }} 
+                        {% if item.available %}
+                            <strong class="availability">(Available)</strong>
+                        {% else %}
+                            <strong class="unavailable availability">(Unavailable)</strong>
+                        {% endif %}
+                    </span>
+                </div>
+                <div>
+                    <a href="/delete/{{ item.id }}">Delete</a>
+                    <a href="/toggle_availability/{{ item.id }}">
+                        {% if item.available %} Mark Unavailable {% else %} Mark Available {% endif %}
+                    </a>
+
+                    <form method="POST" action="/order" style="display:inline;">
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <button type="submit" {% if not item.available or item.stock == 0 %} disabled {% endif %}>
+                            Order Item
+                        </button>
+                    </form>
+                </div>
             </li>
         {% endfor %}
     </ul>
+
+    <div class="orders">
+        <h2>Current Orders</h2>
+        <ul>
+            {% for order in orders %}
+                <li class="order-item">
+                    Order for {{ order.menu_item.name }} - Status: {{ order.status }}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>
